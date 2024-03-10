@@ -7,6 +7,34 @@
 
 import SwiftUI
 
+struct ButtonStyleView: ButtonStyle {
+    @State private var activeAnimation = false
+    let duration = 0.22
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .foregroundStyle(.blue)
+            .padding()
+            .background {
+                Circle()
+                    .opacity(activeAnimation ? 0.1 : 0)
+            }
+            .scaleEffect(activeAnimation ? 0.86 : 1)
+            .animation(.easeOut(duration: duration), value: activeAnimation)
+            .onChange(of: configuration.isPressed) { _, newValue in
+                guard newValue else { return }
+                
+                withAnimation(
+                    .easeOut(duration: duration)
+                ) {
+                    activeAnimation = true
+                } completion: {
+                    activeAnimation = false
+                }
+            }
+    }
+}
+
 struct ContentView: View {
     @State private var activeAnimation = false
     
@@ -46,7 +74,8 @@ struct ContentView: View {
                 .frame(maxHeight: .infinity, alignment: .center)
             }
         }
-        .frame(maxWidth: 62)
+        .frame(maxWidth: 100)
+        .buttonStyle(ButtonStyleView())
     }
 }
 
